@@ -1,5 +1,7 @@
 // Routines to let C code use special x86 instructions.
 
+
+
 static inline uchar
 inb(ushort port)
 {
@@ -18,6 +20,15 @@ insl(int port, void *addr, int cnt)
                "memory", "cc");
 }
 
+static inline uint
+inl(int port)
+{
+  uint data;
+  asm volatile("inl %w1,%0" : "=a" (data) : "d" (port));
+  return data;
+}
+
+
 static inline void
 outb(ushort port, uchar data)
 {
@@ -28,6 +39,12 @@ static inline void
 outw(ushort port, ushort data)
 {
   asm volatile("out %0,%1" : : "a" (data), "d" (port));
+}
+
+static inline void
+outl(int port, uint data)
+{
+  asm volatile("outl %0,%w1" : : "a" (data), "d" (port));
 }
 
 static inline void
