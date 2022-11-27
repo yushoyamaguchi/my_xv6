@@ -58,6 +58,7 @@ typedef uint pde_t;
 // Represents true-or-false values
 typedef _Bool bool;
 enum { false, true };
+#endif
 
 // Explicitly-sized versions of integer types
 typedef __signed char int8_t;
@@ -92,7 +93,6 @@ typedef int32_t off_t;
 // variable-length arguments list.
 typedef __builtin_va_list va_list;
 
-#endif
 
 // Efficient min and max operations
 #define MIN(_a, _b)						\

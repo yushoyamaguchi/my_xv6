@@ -19,6 +19,4 @@ struct PCIDevice {
     uint8_t bus, device, function, header_type;
 };
 
-struct PCIDevice pci_devices[32];
 
-int num_device;

@@ -1,10 +1,17 @@
-#include <pci.h>
+#include "types.h"
+#include "defs.h"
+#include "x86.h"
+#include "pci.h"
+
 
 
 /*
  *Respectful reference from https://github.com/uchan-nos/mikanos
  */
 
+struct PCIDevice pci_devices[32];
+
+int num_device;
 
 uint32_t shl (uint32_t x, unsigned int bits) {
     return x << bits;
@@ -27,11 +34,11 @@ ReadData()
 }
 
 void WriteAddress(uint32_t address) {
-    IoOut32(CONFIG_ADDRESS, address);
+    outl(CONFIG_ADDRESS, address);
 }
 
 void WriteData(uint32_t value) {
-    IoOut32(CONFIG_DATA, value);
+    outl(CONFIG_DATA, value);
 }
 
 uint32_t ReadConfReg(struct PCIDevice *dev, uint8_t reg_addr) {
@@ -64,6 +71,7 @@ int AddDevice(struct PCIDevice* device) {
     }
     memcpy(&pci_devices[num_device],device,sizeof(struct PCIDevice));
     ++num_device;
+    cprintf("add_a_pci_device\n");
     return 1;
 }
 
@@ -71,7 +79,7 @@ int ScanFunction(uint8_t bus, uint8_t device, uint8_t function) {
     uint8_t header_type = ReadHeaderType(bus, device, function);
     struct PCIDevice dev={bus, device, function, header_type};
     int err;
-    if (err = AddDevice(&dev)) {
+    if ((err = AddDevice(&dev))<0) {
       return err;
     }
     //PCI-PCIブリッジは考慮しない
@@ -82,7 +90,7 @@ int ScanFunction(uint8_t bus, uint8_t device, uint8_t function) {
 
 int ScanDevice(uint8_t bus, uint8_t device) {
     int err;
-    if (err = ScanFunction(bus, device, 0)) {
+    if ((err = ScanFunction(bus, device, 0))<0) {
       return err;
     }
     if (IsSingleFunctionDevice(ReadHeaderType(bus, device, 0))) {
@@ -93,7 +101,7 @@ int ScanDevice(uint8_t bus, uint8_t device) {
       if (ReadVendorId(bus, device, function) == 0xffffu) {
         continue;
       }
-      if (err = ScanFunction(bus, device, function)) {
+      if ((err = ScanFunction(bus, device, function))<0) {
         return err;
       }
     }
@@ -107,7 +115,7 @@ int ScanBus(uint8_t bus) {
         continue;
       }
       int err;
-      if (err = ScanDevice(bus, device)) {
+      if ((err = ScanDevice(bus, device))<0) {
         return err;
       }
     }
@@ -117,26 +125,26 @@ int ScanBus(uint8_t bus) {
 int ScanAllBus() {
     num_device = 0;
 
-    auto header_type = ReadHeaderType(0, 0, 0);
+    uint8_t header_type = ReadHeaderType(0, 0, 0);
     if (IsSingleFunctionDevice(header_type)) {
         return ScanBus(0);
     }
 
     for (uint8_t function = 0; function < 8; ++function) {
-        if (ReadVendorId(0, 0, function) == 0xffffu) {
+      if (ReadVendorId(0, 0, function) == 0xffffu) {
         continue;
-        }
-        int err;
-        if (err = ScanBus(function)) {
+      }
+      int err;
+      if ((err = ScanBus(function))<0) {
         return err;
-        }
+      }
     }
     return 1;
 }
 
 
-void InitializePCI(void){
+void pciinit(void){
     if(ScanAllBus()<0){
-        exit(1);
+        exit();
     }
 }
