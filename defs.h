@@ -142,6 +142,7 @@ void            initsleeplock(struct sleeplock*, char*);
 // string.c
 int             memcmp(const void*, const void*, uint);
 void*           memmove(void*, const void*, uint);
+void*           memcpy(void*, const void*, uint);
 void*           memset(void*, int, uint);
 char*           safestrcpy(char*, const char*, int);
 int             strlen(const char*);
@@ -187,7 +188,7 @@ int             copyout(pde_t*, uint, void*, uint);
 void            clearpteu(pde_t *pgdir, char *uva);
 
 //pci.c
-void            InitializePCI(void);
+void            pciinit(void);
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))

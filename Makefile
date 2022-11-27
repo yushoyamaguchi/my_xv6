@@ -12,6 +12,7 @@ OBJS = \
 	log.o\
 	main.o\
 	mp.o\
+	pci.o\
 	picirq.o\
 	pipe.o\
 	proc.o\
@@ -157,7 +158,7 @@ _forktest: forktest.o $(ULIB)
 	$(OBJDUMP) -S _forktest > forktest.asm
 
 mkfs: mkfs.c fs.h
-	gcc -Werror -Wall -o mkfs mkfs.c
+	gcc -Werror -Wall -DBUILD_MKFS -o mkfs mkfs.c
 
 # Prevent deletion of intermediate files, e.g. cat.o, after first build, so
 # that disk image changes after first build are persistent until clean.  More
