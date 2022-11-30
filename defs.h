@@ -9,6 +9,7 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
+struct PCIDevice;
 
 // bio.c
 void            binit(void);
@@ -189,6 +190,8 @@ void            clearpteu(pde_t *pgdir, char *uva);
 
 //pci.c
 void            pciinit(void);
+uint64_t        ReadBar(struct PCIDevice* device, unsigned int bar_index);
+uint16_t        ReadDeviceId(struct PCIDevice* dev);
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))

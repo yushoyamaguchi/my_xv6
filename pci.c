@@ -65,6 +65,15 @@ uint16_t ReadVendorId(uint8_t bus, uint8_t device, uint8_t function) {
     return ReadData() & 0xffffu;
 }
 
+uint16_t ReadDeviceIdDetail(uint8_t bus, uint8_t device, uint8_t function) {
+    WriteAddress(MakeAddress(bus, device, function, 0x00));
+    return ReadData() >> 16;
+}
+
+uint16_t ReadDeviceId(struct PCIDevice* dev) {
+    return ReadDeviceIdDetail(dev->bus, dev->device, dev->function);
+}
+
 int AddDevice(struct PCIDevice* device) {
     if (num_device == sizeof(pci_devices)/sizeof(struct PCIDevice)) {
       return (-1);
@@ -140,6 +149,32 @@ int ScanAllBus() {
       }
     }
     return 1;
+}
+
+uint8_t CalcBarAddress(unsigned int bar_index) {
+    return 0x10 + 4 * bar_index;
+}
+
+uint64_t ReadBar(struct PCIDevice* device, unsigned int bar_index) {
+    if (bar_index >= 6) {
+      return (-1);
+    }
+
+    uint8_t addr = CalcBarAddress(bar_index);
+    uint32_t bar = ReadConfReg(device, addr);
+
+    // 32 bit address
+    if ((bar & 4u) == 0) {
+      return (bar);
+    }
+
+    // 64 bit address
+    if (bar_index >= 5) {
+      return -1;
+    }
+
+    uint32_t bar_upper = ReadConfReg(device, addr + 4);
+    return(bar | ((uint64_t)(bar_upper) << 32));
 }
 
 

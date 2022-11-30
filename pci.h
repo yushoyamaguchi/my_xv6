@@ -1,3 +1,4 @@
+#pragma once
 #include "types.h"
 #define CONFIG_ADDRESS	0x0cf8
 #define CONFIG_DATA	0x0cfc
@@ -15,8 +16,8 @@ union pci_config_address {
 	};
 };
 
+
 struct PCIDevice {
     uint8_t bus, device, function, header_type;
 };
-
 
