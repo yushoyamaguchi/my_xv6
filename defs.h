@@ -193,5 +193,9 @@ void            pciinit(void);
 uint64_t        ReadBar(struct PCIDevice* device, unsigned int bar_index);
 uint16_t        ReadDeviceId(struct PCIDevice* dev);
 
+
+//e1000.c
+void            e1000_init(void);
+
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
