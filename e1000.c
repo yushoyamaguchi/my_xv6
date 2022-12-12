@@ -10,6 +10,9 @@ struct e1000 {
     uint8_t irq;
 };
 
+void e1000_intr_handler(void){
+
+}
 
 void e1000_init(void){
     uint64_t mmio_base=0;
