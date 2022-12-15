@@ -192,6 +192,7 @@ void            clearpteu(pde_t *pgdir, char *uva);
 void            pciinit(void);
 uint64_t        ReadBar(struct PCIDevice* device, unsigned int bar_index);
 uint16_t        ReadDeviceId(struct PCIDevice* dev);
+uint32_t        ReadConfReg(struct PCIDevice *dev, uint8_t reg_addr);
 
 
 //e1000.c
