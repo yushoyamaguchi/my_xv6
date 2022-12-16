@@ -4,6 +4,7 @@
 #include "types.h"
 #include "param.h"
 #include "pcireg.h"
+#include "memlayout.h"
 
 
 //defined in pci.c
