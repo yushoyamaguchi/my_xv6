@@ -44,6 +44,8 @@ extern int ncpu;
 #define E1000_RA       (0x5400)  /* Receive Address - RW Array */
 
 /* Device Control */
+#define E1000_CTL_FD      0x00000001  // CTRL[0]
+#define E1000_CTL_ASDE    0x00000020  // CTRL[5]
 #define E1000_CTL_SLU     0x00000040    /* set link up */
 #define E1000_CTL_FRCSPD  0x00000800    /* force speed */
 #define E1000_CTL_FRCDPLX 0x00001000    /* force duplex */
@@ -56,7 +58,12 @@ extern int ncpu;
 #define E1000_EERD_DONE (1 << 4) /* 4th bit */
 
 /* Interrupt */
-#define E1000_IMS_RXT0    0x00000080     /* rx timer intr */
+
+#define E1000_IMS_LSC     0x00000004 // MSI[2]
+#define E1000_IMS_RXSEQ   0x00000008 // MSI[3]
+#define E1000_IMS_RXDMT0  0x00000010 // MSI[4]
+#define E1000_IMS_RXO     0x00000040 // MSI[6]
+#define E1000_IMS_RXT0    0x00000080 // MSI[7]  /* rx timer intr */
 #define E1000_ICR_RXT0    E1000_IMS_RXT0
 
 /* Transmit Control */
