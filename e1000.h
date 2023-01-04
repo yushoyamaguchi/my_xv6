@@ -47,6 +47,7 @@ extern int ncpu;
 #define E1000_CTL_FD      0x00000001  // CTRL[0]
 #define E1000_CTL_ASDE    0x00000020  // CTRL[5]
 #define E1000_CTL_SLU     0x00000040    /* set link up */
+#define E1000_CTL_SPEED   0x00000200    /*set speed*/
 #define E1000_CTL_FRCSPD  0x00000800    /* force speed */
 #define E1000_CTL_FRCDPLX 0x00001000    /* force duplex */
 #define E1000_CTL_RST     0x00400000    /* full reset */

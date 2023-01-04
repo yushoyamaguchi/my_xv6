@@ -19,7 +19,8 @@ void            bwrite(struct buf*);
 
 // console.c
 void            consoleinit(void);
-void            cprintf(char*, ...);
+int             cprintf(const char*, ...);
+//void            cprintf(char*, ...);
 void            consoleintr(int(*)(void));
 void            panic(char*) __attribute__((noreturn));
 
@@ -198,6 +199,22 @@ uint32_t        ReadConfReg(struct PCIDevice *dev, uint8_t reg_addr);
 //e1000.c
 void            e1000_init(void);
 void            e1000_intr_handler(void);
+uint8_t         e1000_tx(void *buf, uint16_t length);
+void            e1000_test_tx(void);
+
+// printfmt.c
+void            vprintfmt(void (*)(int, void*), void*, const char*, va_list);
+int             snprintf(char *buf, int n, const char *fmt, ...);
+
+// string.c
+int             strcmp(const char *p, const char *q);
+int             strnlen(const char *s, size_t size);
+long            strtol(const char *s, char **endptr, int base);
+
+// variable length arguments
+#define va_start(ap, last) __builtin_va_start(ap, last)
+#define va_arg(ap, type) __builtin_va_arg(ap, type)
+#define va_end(ap) __builtin_va_end(ap)
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
