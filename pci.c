@@ -2,7 +2,7 @@
 #include "defs.h"
 #include "x86.h"
 #include "pci.h"
-
+#include "pcireg.h"
 
 
 /*
@@ -165,6 +165,7 @@ uint64_t ReadBar(struct PCIDevice* device, unsigned int bar_index) {
 
     // 32 bit address
     if ((bar & 4u) == 0) {
+      cprintf("bar=0x%x : 32bit\n",bar);
       return (bar);
     }
 
@@ -175,6 +176,25 @@ uint64_t ReadBar(struct PCIDevice* device, unsigned int bar_index) {
 
     uint32_t bar_upper = ReadConfReg(device, addr + 4);
     return(bar | ((uint64_t)(bar_upper) << 32));
+}
+
+uint32_t ReadBar32(struct PCIDevice* device, unsigned int bar_index) {
+    if (bar_index >= 6) {
+      return (-1);
+    }
+
+    uint8_t addr = CalcBarAddress(bar_index);
+    uint32_t bar = ReadConfReg(device, addr);
+
+    // 32 bit address
+    return (bar);
+}
+
+void PCIFuncEnable(struct PCIDevice * device){
+  WriteConfReg(device, PCI_COMMAND_STATUS_REG,
+		       PCI_COMMAND_IO_ENABLE |
+		       PCI_COMMAND_MEM_ENABLE |
+		       PCI_COMMAND_MASTER_ENABLE);
 }
 
 

@@ -74,8 +74,10 @@ extern int ncpu;
 #define E1000_TCTL_PSP    0x00000008    /* pad short packets */
 #define E1000_TCTL_CT     0x00000ff0    /* collision threshold */
 #define E1000_TCTL_CT_SHIFT 4
+#define E1000_TCTL_CT_HERE  0x00000100 /*10h*/
 #define E1000_TCTL_COLD   0x003ff000    /* collision distance */
 #define E1000_TCTL_COLD_SHIFT 12
+#define E1000_TCTL_COLD_HERE    0x00400000      /*40h*/
 #define E1000_TCTL_SWXOFF 0x00400000    /* SW Xoff transmission */
 #define E1000_TCTL_PBE    0x00800000    /* Packet Burst Enable */
 #define E1000_TCTL_RTLC   0x01000000    /* Re-transmit on late collision */

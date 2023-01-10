@@ -74,20 +74,17 @@ uint8_t e1000_tx(void *buf, uint16_t length){
     struct tx_desc *desc=&(dev->tx_ring[tail]);
     //tx_descriptorへの設定
     desc->buffer_address=(uint64_t)(V2P(buf));
-    //desc->buffer_address=(uintptr_t)buf;
     desc->length=length;
     desc->status=0;
     desc->command = (E1000_TXD_CMD_EOP | E1000_TXD_CMD_RS);
     //tailを進める
     e1000_reg_write(dev, E1000_TDT, (tail + 1) % TX_RING_SIZE);
-    char *p=(char *)dev->mmio_base;
-    mem_hexdump(p,40);
     //nic側で処理が終わるまで待つ
     cprintf("before : desc_status=%d \n",desc->status);
-    /*while(!(desc->status & 0x0fu)) {   
-        microdelay(1);
+    while(!(desc->status & 0x0fu)) {   
+        //microdelay(1);
     }
-    cprintf("after : desc_status=%d \n",desc->status);*/
+    cprintf("after : desc_status=%d \n",desc->status);
     return desc->length;
 }
 
@@ -104,7 +101,6 @@ void e1000_intr_handler(void){
         e1000_reg_read(dev, E1000_ICR);
     }
 }
-
 
 void e1000_tx_init(struct e1000 *dev){
     //データシート14章参照
@@ -123,9 +119,9 @@ void e1000_tx_init(struct e1000 *dev){
     e1000_reg_write(dev, E1000_TDT, 0);
     //TCTL
     uint32_t tctl=(E1000_TCTL_PSP |
-                    E1000_TCTL_CT |
-                    E1000_TCTL_COLD|
-                    0);              
+                    E1000_TCTL_CT_HERE |
+                    E1000_TCTL_COLD_HERE|
+                    0);            
     e1000_reg_write(dev,E1000_TCTL,tctl); 
 }
 
@@ -156,22 +152,21 @@ void e1000_open(struct e1000 *dev){
     //データシート14章参照
     //general setting
     uint32_t ctl_val=E1000_CTL_FD | E1000_CTL_ASDE | E1000_CTL_SLU | E1000_CTL_FRCDPLX | E1000_CTL_SPEED | E1000_CTL_FRCSPD;
-    cprintf("ctl_val=%x\n",ctl_val);
     e1000_reg_write(dev,E1000_CTL,ctl_val);
-    uint32_t ctl_val2=e1000_reg_read(dev,E1000_CTL);
-    cprintf("set ctl_val=%x\n",ctl_val2);
     //割り込み
     uint32_t ims_val=E1000_IMS_LSC | E1000_IMS_RXDMT0 | E1000_IMS_RXSEQ | E1000_IMS_RXO | E1000_IMS_RXT0;
     e1000_reg_write(dev, E1000_IMS, ims_val);
     //clear
     e1000_reg_read(dev, E1000_ICR);
     //rx_enabale
+    uint32_t current_rctl=e1000_reg_read(dev,E1000_RCTL);
     uint32_t rctl=(E1000_RCTL_EN |
-                    0);
+                    current_rctl);
     e1000_reg_write(dev,E1000_RCTL,rctl);
     //tx_enable
+    uint32_t current_tctl=e1000_reg_read(dev,E1000_TCTL);
     uint32_t tctl=(E1000_TCTL_EN |
-                    0);
+                    current_tctl);
     e1000_reg_write(dev,E1000_TCTL,tctl);
     if(e1000_reg_read(dev,E1000_TCTL)&E1000_TCTL_EN){
         cprintf("open \n");
@@ -194,19 +189,20 @@ void e1000_close(struct e1000 *dev){
 
 void e1000_test_tx(void){
     //send test packet
-    cprintf("test tx \n");
     char buf[]="Hello,World";
+    cprintf("test tx : buf_size=0x%x \n",sizeof(buf));
     e1000_tx(buf,sizeof(buf));
 }
 
 void e1000_init(void){
-    uint64_t mmio_base=0;
+    uint32_t mmio_base=0;
     struct e1000 *e1000_dev = (struct e1000 *)kalloc();
     for(int i=0;i<num_device;i++){ //別関数に移す
         if(ReadDeviceId(&pci_devices[i])== 0x100e){
             struct PCIDevice *dev=&(pci_devices[i]);
-            uint64_t base = ReadBar(dev,0);
-            mmio_base= base & ~(uint64_t)(0xf);
+            PCIFuncEnable(dev);
+            uint32_t base = ReadBar32(dev,0);
+            mmio_base= base & ~(uint32_t)(0xf);
             cprintf("find e1000 nic! : mmio_base=%x \n",mmio_base);
             e1000_dev->mmio_base=mmio_base;
             uint32_t irq_buf=ReadConfReg(&pci_devices[i],PCI_INTERRUPT_REG);
@@ -219,7 +215,7 @@ void e1000_init(void){
             e1000_rx_init(e1000_dev);
             e1000_tx_init(e1000_dev);
             the_e1000_device=e1000_dev;
-            e1000_open(the_e1000_device);
+            e1000_open(e1000_dev);
             break;
         }
     }
