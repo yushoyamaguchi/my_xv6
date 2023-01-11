@@ -137,7 +137,6 @@ extern int ncpu;
 /* Transmit Descriptor status definitions [E1000 3.3.3.2] */
 #define E1000_TXD_STAT_DD    0x00000001 /* Descriptor Done */
 
-
 struct tx_desc
 {
     uint64_t buffer_address;
@@ -151,6 +150,9 @@ struct tx_desc
 }__attribute__((packed));
 
 
+
+#define E1000_RXD_STAT_DD       0x01    /* Descriptor Done */
+#define E1000_RXD_STAT_EOP      0x02    /* End of Packet */
 struct rx_desc
 {
     uint64_t addr;
