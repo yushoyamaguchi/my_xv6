@@ -88,22 +88,25 @@ uint8_t e1000_tx(void *buf, uint16_t length){
     return desc->length;
 }
 
-void e1000_rx(struct e1000 *dev){
-    struct e1000_dev* dev=the_e1000_device;
+uint16_t e1000_rx(){
+    struct e1000 *dev=the_e1000_device;
+    struct rx_desc *desc;
     while(1){
         uint32_t next_tail=(e1000_reg_read(dev,E1000_RDT)+1)%RX_RING_SIZE;
-        struct rx_desc *desc=&(dev->rx_ring[next_tail]);
+        desc=&(dev->rx_ring[next_tail]);
         if(!(desc->status&E1000_RXD_STAT_DD)){
-            return;
+            desc->length=0;
+            break;
         }
         if(desc->errors){
             cprintf("e1000 recv error\n");
         }
         else{
-            mem_hexdump(desc->addr,desc->length);
+            mem_hexdump(P2V((uint32_t)(desc->addr)),desc->length);
         }
         e1000_reg_write(dev,E1000_RDT,next_tail);
     }
+    return desc->length;
 }
 
 void e1000_intr_handler(void){
