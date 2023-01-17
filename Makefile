@@ -228,7 +228,10 @@ endif
 QEMUNET = -netdev user,id=net0,hostfwd=tcp:127.0.0.1:1234-:80 \
 -object filter-dump,id=fiter0,netdev=net0,file=pcap/dump.pcap \
 -device e1000,netdev=net0,mac=52:54:00:12:34:56
-QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA) $(QEMUNET)
+QEMUNET_TAP = -netdev tap,id=net0,ifname=tap0 -device e1000,netdev=net0 \
+-object filter-dump,id=filter0,netdev=net0,file=pcap/dump.pcap
+
+QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA) $(QEMUNET_TAP)
 #QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
 
 qemu: fs.img xv6.img
