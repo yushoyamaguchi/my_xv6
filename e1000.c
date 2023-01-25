@@ -215,7 +215,7 @@ void e1000_init(void){
     uint32_t mmio_base=0;
     struct e1000 *e1000_dev = (struct e1000 *)kalloc();
     for(int i=0;i<num_device;i++){ //別関数に移す
-        if(ReadDeviceId(&pci_devices[i])== 0x100e){
+        if(ReadDeviceId(&pci_devices[i])== 0x100e){//e1000eの場合は0x10d3
             struct PCIDevice *dev=&(pci_devices[i]);
             PCIFuncEnable(dev);
             uint32_t base = ReadBar32(dev,0);
