@@ -1,0 +1,6 @@
+ld: printfmt.o: in function `printnum':
+/home/yama/yusho/my_xv6/printfmt.c:56: undefined reference to `__umoddi3'
+ld: /home/yama/yusho/my_xv6/printfmt.c:48: undefined reference to `__udivdi3'
+
+32bit用のコードを64bitマシンでコンパイルしようとするとこうなる。
+gcc-multilibをインストールすると解決した。
