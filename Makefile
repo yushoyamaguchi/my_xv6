@@ -237,7 +237,7 @@ QEMUNET_TAP_V6 = -netdev tap,id=net0,ifname=tap1 -device e1000,netdev=net0 \
 QEMUNET_TAP_V6_DEBUG = -netdev tap,id=net0,ifname=tap1 -device e1000,netdev=net0,mac=33:33:ff:00:00:02 \
 -object filter-dump,id=filter0,netdev=net0,file=pcap/dump.pcap
 
-QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA) $(QEMUNET_TAP_V6)
+QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA) $(QEMUNET)
 #QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
 
 qemu: fs.img xv6.img
