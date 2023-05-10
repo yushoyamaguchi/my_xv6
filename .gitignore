@@ -16,3 +16,4 @@ mkfs
 .gdbinit
 pcap/*
 .vscode/*
+libvirt_test/*
